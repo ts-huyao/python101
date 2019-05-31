@@ -1,0 +1,43 @@
+Issue Type,Issue id,Parent id,Summary,Assignee,Reporter,Priority,Status,Component/s,Custom field (Epic Link),Custom field (Story Points)
+Task,1,,Rebase Tradeshift for the 1st week,huy,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-7,13
+Sub-task,,1,rebase Backend-Service,lil,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase Tradeshift-Proxy2,huy,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase App-Service,lil,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase Apps,kimigao,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase Frontend,huy,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase tradeshift-company-profile,lil,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase Workflow,huy,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase p2p-apps,lil,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase tradeshift-product-engine,cyh,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase business-analytics,lry,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase business-analytics-etl,lry,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase business-analytics-etl-b,lry,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase clamav,lry,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase event-app-handler,kimigao,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase orgs,cyh,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase companies-onboarding,mqf,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase common-ui-apps,kimigao,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,tradeshift-approval-service,kimigao,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,rebase Integration-Test,mqf,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,1,Run Integration-Test on rebase env,mqf,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Task,2,,Rebase Tradeshift for the 2nd week,huy,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-7,13
+Sub-task,,2,rebase Backend-Service,lil,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase Tradeshift-Proxy2,huy,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase App-Service,lil,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase Apps,kimigao,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase Frontend,huy,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase tradeshift-company-profile,lil,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase Workflow,huy,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase p2p-apps,lil,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase tradeshift-product-engine,cyh,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase business-analytics,lry,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase business-analytics-etl,lry,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase business-analytics-etl-b,lry,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase clamav,lry,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase event-app-handler,kimigao,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase orgs,cyh,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase companies-onboarding,mqf,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase common-ui-apps,kimigao,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,tradeshift-approval-service,kimigao,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,rebase Integration-Test,mqf,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
+Sub-task,,2,Run Integration-Test on rebase env,mqf,huy,Medium,Open,Migrate TradeshiftCN to Tradeshift,CPA-8,1
