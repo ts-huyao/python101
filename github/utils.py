@@ -224,4 +224,7 @@ class GitHubRepo:
                                           progress=Progress(), f=True)
 
     def push_all_tags(self, remote_to: str):
-        self.repo.remotes[remote_to].push(progress=Progress(), tags=True)
+        self.repo.remotes[remote_to].push(progress=Progress(), tags=True, force=True)
+
+    def push_all_branches(self, remote_to: str):
+        self.repo.remotes[remote_to].push(progress=Progress(), all=True, force=True)

@@ -54,7 +54,7 @@ WEB_HOOKS = [
 
 ]
 
-g = Github('private token', retry=Retry(total=5, status_forcelist=[502]))
+g = Github('00338778f2dce08febe4396abedd2278ae930e48', retry=Retry(total=5, status_forcelist=[502]))
 
 tscn = g.get_organization('TradeshiftCN')
 bwts = g.get_organization('BaiwangTradeshift')
@@ -79,6 +79,8 @@ for tscn_repo in tscn.get_repos():
 
     # Check if the repo to be forked exist in BWTS
     forked_repo = bwts.create_fork(tscn_repo.parent)
+    migrated_repo = bwts.get_repo(repo_short_name)
+
     # Check Migration is donw
     forked_repo_topics = forked_repo.get_topics()
     if 'migration-completed' in forked_repo_topics:
@@ -101,9 +103,13 @@ for tscn_repo in tscn.get_repos():
     local_tscn_repo.add_remote(remote_url=forked_repo.ssh_url, remote_name='bwts')
 
     # Push branches
-    for branch in local_tscn_repo.get_branches('origin'):
-        local_tscn_repo.push_branch('origin', 'bwts', branch)
+    # for branch in local_tscn_repo.get_branches('origin'):
+    #     local_tscn_repo.push_branch('origin', 'bwts', branch)
 
+    for bwts_repo_branch in migrated_repo.get_branches():
+        bwts_repo_branch.remove_protection()
+
+    local_tscn_repo.push_all_branches('bwts')
     local_tscn_repo.push_all_tags('bwts')
     # create web hook
     for config in WEB_HOOKS:
@@ -114,7 +120,7 @@ for tscn_repo in tscn.get_repos():
         except Exception as e:
             LOGGER.error(e)
 
-    migrated_repo = bwts.get_repo(repo_short_name)
+
     # copy settings
     migrated_repo.edit(description=tscn_repo.description if tscn_repo.description else NotSet,
                        homepage=tscn_repo.homepage if tscn_repo.homepage else NotSet,
