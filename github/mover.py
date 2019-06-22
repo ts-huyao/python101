@@ -20,6 +20,7 @@ from urllib3 import Retry
 
 from utils import TqdmHandler, GitHubRepo
 
+ACCESS_TOKEN = 'token'
 WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
 if not os.path.exists(WORKING_DIR_TSCN):
     os.makedirs(WORKING_DIR_TSCN)
@@ -35,7 +36,7 @@ file_handler.setFormatter(formatter)
 
 logging.basicConfig(level=logging.INFO,
                     format=LOGFORMAT,
-                    handlers=[stream])
+                    handlers=[stream, file_handler])
 
 LOGGER = logging.getLogger('GitHubRepo')
 
@@ -59,7 +60,7 @@ WEB_HOOKS = [
 
 ]
 
-g = Github('ee73f6154c5e11265274435b00ffce4192fd7dcc', retry=Retry(total=5, status_forcelist=[502]))
+g = Github(ACCESS_TOKEN, retry=Retry(total=5, status_forcelist=[502]))
 
 tscn = g.get_organization('TradeshiftCN')
 bwts = g.get_organization('BaiwangTradeshift')
@@ -110,7 +111,8 @@ for tscn_repo in tscn.get_repos():
         #     local_tscn_repo.push_branch('origin', 'bwts', branch)
 
         for bwts_repo_branch in migrated_repo.get_branches():
-            bwts_repo_branch.remove_protection()
+            if bwts_repo_branch.protected:
+                bwts_repo_branch.remove_protection()
 
         local_tscn_repo.push_all_branches('bwts')
         local_tscn_repo.push_all_tags('bwts')
