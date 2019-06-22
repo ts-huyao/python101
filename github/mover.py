@@ -11,7 +11,6 @@
 
 import logging
 import os
-import shutil
 from logging.handlers import WatchedFileHandler
 
 from coloredlogs import ColoredFormatter
@@ -23,7 +22,7 @@ from utils import TqdmHandler, GitHubRepo
 
 WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
 if not os.path.exists(WORKING_DIR_TSCN):
-    shutil.rmtree(WORKING_DIR_TSCN)
+    os.makedirs(WORKING_DIR_TSCN)
 
 LOGFORMAT = '%(name)s - %(levelname)s - %(message)s'
 formatter = ColoredFormatter(LOGFORMAT)
