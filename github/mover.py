@@ -22,6 +22,8 @@ from urllib3 import Retry
 from utils import TqdmHandler, GitHubRepo
 
 WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
+if not os.path.exists(WORKING_DIR_TSCN):
+    shutil.rmtree(WORKING_DIR_TSCN)
 
 LOGFORMAT = '%(name)s - %(levelname)s - %(message)s'
 formatter = ColoredFormatter(LOGFORMAT)
@@ -58,7 +60,7 @@ WEB_HOOKS = [
 
 ]
 
-g = Github('00338778f2dce08febe4396abedd2278ae930e48', retry=Retry(total=5, status_forcelist=[502]))
+g = Github('ee73f6154c5e11265274435b00ffce4192fd7dcc', retry=Retry(total=5, status_forcelist=[502]))
 
 tscn = g.get_organization('TradeshiftCN')
 bwts = g.get_organization('BaiwangTradeshift')
@@ -94,9 +96,6 @@ for tscn_repo in tscn.get_repos():
         devops_team.set_repo_permission(forked_repo, 'read')
         dev_team.set_repo_permission(forked_repo, 'write')
         ci_team.set_repo_permission(forked_repo, 'write')
-
-        if not os.path.exists(WORKING_DIR_TSCN):
-            shutil.rmtree(WORKING_DIR_TSCN)
 
         local_tscn_repo = GitHubRepo(work_dir=WORKING_DIR_TSCN,
                                      dir_name=repo_short_name,
