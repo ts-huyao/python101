@@ -12,6 +12,7 @@
 import logging
 import os
 import shutil
+from logging.handlers import WatchedFileHandler
 
 from coloredlogs import ColoredFormatter
 from github import Github, GithubException
@@ -20,19 +21,22 @@ from urllib3 import Retry
 
 from utils import TqdmHandler, GitHubRepo
 
+WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
+
 LOGFORMAT = '%(name)s - %(levelname)s - %(message)s'
 formatter = ColoredFormatter(LOGFORMAT)
 stream = TqdmHandler()
 stream.setLevel(logging.INFO)
 stream.setFormatter(formatter)
 
+file_handler = WatchedFileHandler(filename=os.path.join(WORKING_DIR_TSCN, 'mover.log'))
+file_handler.setFormatter(formatter)
+
 logging.basicConfig(level=logging.INFO,
                     format=LOGFORMAT,
                     handlers=[stream])
 
 LOGGER = logging.getLogger('GitHubRepo')
-
-WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
 
 WEB_HOOKS = [
     ({'content_type': 'form',
@@ -119,7 +123,6 @@ for tscn_repo in tscn.get_repos():
             LOGGER.warning(ge.data)
         except Exception as e:
             LOGGER.error(e)
-
 
     # copy settings
     migrated_repo.edit(description=tscn_repo.description if tscn_repo.description else NotSet,
