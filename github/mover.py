@@ -22,6 +22,8 @@ from utils import TqdmHandler, GitHubRepo
 
 ACCESS_TOKEN = 'token'
 WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
+
+SUC_TAG = 'migration-completed-1'
 if not os.path.exists(WORKING_DIR_TSCN):
     os.makedirs(WORKING_DIR_TSCN)
 
@@ -71,7 +73,8 @@ dev_team = next(team for team in teams if team.name == 'Developers')
 mover_team = next(team for team in teams if team.name == 'MOVER')
 
 for tscn_repo in tscn.get_repos():
-
+    if tscn_repo.name != 'Backend-Ubl':
+        continue
     try:
         if tscn_repo.fork:
             parent_full_name = tscn_repo.parent.full_name
@@ -86,11 +89,14 @@ for tscn_repo in tscn.get_repos():
 
         # Check if the repo to be forked exist in BWTS
         forked_repo = bwts.create_fork(tscn_repo.parent)
-        migrated_repo = bwts.get_repo(repo_short_name)
+        #migrated_repo = bwts.get_repo(repo_short_name)
+
+        if forked_repo.name != tscn_repo.name:
+            LOGGER.warning(f'BWTS repo "{forked_repo.name}" differs from "{tscn_repo.name}" in TSCN')
 
         # Check Migration is donw
         forked_repo_topics = forked_repo.get_topics()
-        if 'migration-completed' in forked_repo_topics:
+        if SUC_TAG in forked_repo_topics:
             continue
 
         devops_team.set_repo_permission(forked_repo, 'read')
@@ -107,10 +113,10 @@ for tscn_repo in tscn.get_repos():
         local_tscn_repo.add_remote(remote_url=forked_repo.ssh_url, remote_name='bwts')
 
         # Push branches
-        # for branch in local_tscn_repo.get_branches('origin'):
-        #     local_tscn_repo.push_branch('origin', 'bwts', branch)
+        for branch in local_tscn_repo.get_branches('origin'):
+            local_tscn_repo.push_branch('origin', 'bwts', branch)
 
-        for bwts_repo_branch in migrated_repo.get_branches():
+        for bwts_repo_branch in forked_repo.get_branches():
             if bwts_repo_branch.protected:
                 bwts_repo_branch.remove_protection()
 
@@ -126,7 +132,7 @@ for tscn_repo in tscn.get_repos():
                 LOGGER.error(e)
 
         # copy settings
-        migrated_repo.edit(description=tscn_repo.description if tscn_repo.description else NotSet,
+        forked_repo.edit(description=tscn_repo.description if tscn_repo.description else NotSet,
                            homepage=tscn_repo.homepage if tscn_repo.homepage else NotSet,
                            private=tscn_repo.private,
                            has_issues=tscn_repo.has_issues,
@@ -142,7 +148,7 @@ for tscn_repo in tscn.get_repos():
         # copy branch protection
         tscn_repo_branch_dict = {b.name: b for b in tscn_repo.get_branches()}
 
-        for bwts_repo_branch in migrated_repo.get_branches():
+        for bwts_repo_branch in forked_repo.get_branches():
             if bwts_repo_branch.name in tscn_repo_branch_dict:
                 tscn_repo_branch = tscn_repo_branch_dict[bwts_repo_branch.name]
                 if tscn_repo_branch.protected:
@@ -165,8 +171,8 @@ for tscn_repo in tscn.get_repos():
 
         # Mark Migration is donw
         forked_repo_topics = forked_repo.get_topics()
-        if 'migration-completed' not in forked_repo_topics:
-            forked_repo_topics.append('migration-completed')
+        if SUC_TAG not in forked_repo_topics:
+            forked_repo_topics.append(SUC_TAG)
         forked_repo.replace_topics(forked_repo_topics)
 
         LOGGER.info(f'Finished migrating {repo_short_name}')
