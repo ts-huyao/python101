@@ -20,7 +20,7 @@ from urllib3 import Retry
 
 from utils import TqdmHandler, GitHubRepo
 
-ACCESS_TOKEN = 'token'
+ACCESS_TOKEN = 'toekn'
 WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
 
 SUC_TAG = 'migration-completed-2'
@@ -74,82 +74,81 @@ mover_team = next(team for team in teams if team.name == 'MOVER')
 
 for tscn_repo in tscn.get_repos():
     try:
+        if tscn_repo.raw_data['disabled']:
+            continue
+
+        tscn_repo_short_name = tscn_repo.name
+        tscn_repo_ssh_url = tscn_repo.ssh_url
+
         if tscn_repo.fork:
             parent_full_name = tscn_repo.parent.full_name
             if 'Tradeshift/' not in parent_full_name:
                 continue
+            new_repo_on_bwts = bwts.create_fork(tscn_repo.parent)
+            if new_repo_on_bwts.name != tscn_repo.name:
+                LOGGER.warning(f'BWTS repo "{new_repo_on_bwts.name}" differs from "{tscn_repo.name}" in TSCN')
+        else:
+            if bwts.get
+            new_repo_on_bwts = bwts.create_repo(tscn_repo_short_name)
 
-        repo_short_name = tscn_repo.name
-
-        tscn_repo = tscn.get_repo(repo_short_name)
-        ssh_url = tscn_repo.ssh_url
-        # short_name = tscn_repo.name
-
-        # Check if the repo to be forked exist in BWTS
-        forked_repo = bwts.create_fork(tscn_repo.parent)
-        #migrated_repo = bwts.get_repo(repo_short_name)
-
-        if forked_repo.name != tscn_repo.name:
-            LOGGER.warning(f'BWTS repo "{forked_repo.name}" differs from "{tscn_repo.name}" in TSCN')
-
-        # Check Migration is donw
-        forked_repo_topics = forked_repo.get_topics()
-        if SUC_TAG in forked_repo_topics:
+        # Check Migration is done
+        bwts_repo_topics = new_repo_on_bwts.get_topics()
+        if SUC_TAG in bwts_repo_topics:
             continue
 
-        devops_team.set_repo_permission(forked_repo, 'read')
-        dev_team.set_repo_permission(forked_repo, 'write')
-        ci_team.set_repo_permission(forked_repo, 'write')
+        devops_team.set_repo_permission(new_repo_on_bwts, 'read')
+        dev_team.set_repo_permission(new_repo_on_bwts, 'write')
+        ci_team.set_repo_permission(new_repo_on_bwts, 'write')
 
         local_tscn_repo = GitHubRepo(work_dir=WORKING_DIR_TSCN,
-                                     dir_name=repo_short_name,
+                                     dir_name=tscn_repo_short_name,
                                      org_name='TradeshiftCN',
-                                     repo_name=repo_short_name)
-        local_tscn_repo.add_remote(remote_url=ssh_url, remote_name='origin')
+                                     repo_name=tscn_repo_short_name)
+        local_tscn_repo.add_remote(remote_url=tscn_repo_ssh_url, remote_name='origin')
         local_tscn_repo.fetch('origin')
 
-        local_tscn_repo.add_remote(remote_url=forked_repo.ssh_url, remote_name='bwts')
+        local_tscn_repo.add_remote(remote_url=new_repo_on_bwts.ssh_url, remote_name='bwts')
 
         # Push branches
-#        for branch in local_tscn_repo.get_branches('origin'):
-#            local_tscn_repo.push_branch('origin', 'bwts', branch)
+        #        for branch in local_tscn_repo.get_branches('origin'):
+        #            local_tscn_repo.push_branch('origin', 'bwts', branch)
 
-        for bwts_repo_branch in forked_repo.get_branches():
+        for bwts_repo_branch in new_repo_on_bwts.get_branches():
             if bwts_repo_branch.protected:
                 bwts_repo_branch.remove_protection()
 
         for branch in local_tscn_repo.get_branches('origin'):
             local_tscn_repo.push_branch('origin', 'bwts', branch)
 
-        #local_tscn_repo.push_all_branches('bwts')
+        # local_tscn_repo.push_all_branches('bwts')
         local_tscn_repo.push_all_tags('bwts')
         # create web hook
         for config in WEB_HOOKS:
             try:
-                forked_repo.create_hook("web", config[0], config[1], active=True)
+                new_repo_on_bwts.create_hook("web", config[0], config[1], active=True)
             except GithubException as ge:
                 LOGGER.warning(ge.data)
             except Exception as e:
                 LOGGER.error(e)
 
         # copy settings
-        forked_repo.edit(description=tscn_repo.description if tscn_repo.description else NotSet,
-                           homepage=tscn_repo.homepage if tscn_repo.homepage else NotSet,
-                           private=tscn_repo.private,
-                           has_issues=tscn_repo.has_issues,
-                           has_projects=tscn_repo.has_projects,
-                           has_wiki=tscn_repo.has_wiki,
-                           has_downloads=tscn_repo.has_downloads,
-                           default_branch=tscn_repo.default_branch if tscn_repo.default_branch else NotSet,
-                           allow_squash_merge=tscn_repo.allow_squash_merge,
-                           allow_merge_commit=tscn_repo.allow_merge_commit,
-                           allow_rebase_merge=tscn_repo.allow_rebase_merge,
-                           archived=NotSet)
+        new_repo_on_bwts.edit(description=tscn_repo.description if tscn_repo.description else NotSet,
+                              homepage=tscn_repo.homepage if tscn_repo.homepage else NotSet,
+                              private=tscn_repo.private,
+                              has_issues=tscn_repo.has_issues,
+                              has_projects=tscn_repo.has_projects,
+                              has_wiki=tscn_repo.has_wiki,
+                              has_downloads=tscn_repo.has_downloads,
+                              default_branch=tscn_repo.default_branch if tscn_repo.default_branch else NotSet,
+                              allow_squash_merge=tscn_repo.allow_squash_merge,
+                              allow_merge_commit=tscn_repo.allow_merge_commit,
+                              allow_rebase_merge=tscn_repo.allow_rebase_merge,
+                              archived=NotSet)
 
         # copy branch protection
         tscn_repo_branch_dict = {b.name: b for b in tscn_repo.get_branches()}
 
-        for bwts_repo_branch in forked_repo.get_branches():
+        for bwts_repo_branch in new_repo_on_bwts.get_branches():
             if bwts_repo_branch.name in tscn_repo_branch_dict:
                 tscn_repo_branch = tscn_repo_branch_dict[bwts_repo_branch.name]
                 if tscn_repo_branch.protected:
@@ -171,12 +170,12 @@ for tscn_repo in tscn.get_repos():
                         team_push_restrictions=team_push_restriction if team_push_restriction else NotSet)
 
         # Mark Migration is donw
-        forked_repo_topics = forked_repo.get_topics()
-        if SUC_TAG not in forked_repo_topics:
-            forked_repo_topics.append(SUC_TAG)
-        forked_repo.replace_topics(forked_repo_topics)
+        bwts_repo_topics = new_repo_on_bwts.get_topics()
+        if SUC_TAG not in bwts_repo_topics:
+            bwts_repo_topics.append(SUC_TAG)
+        new_repo_on_bwts.replace_topics(bwts_repo_topics)
 
-        LOGGER.info(f'Finished migrating {repo_short_name}')
+        LOGGER.info(f'Finished migrating {tscn_repo_short_name}')
     except Exception as e:
         LOGGER.error(f'Failed migrating {tscn_repo}')
         LOGGER.error(e)
