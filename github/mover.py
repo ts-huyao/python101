@@ -14,13 +14,13 @@ import os
 from logging.handlers import WatchedFileHandler
 
 from coloredlogs import ColoredFormatter
-from github import Github, GithubException
+from github import Github, GithubException, UnknownObjectException
 from github.GithubObject import NotSet
 from urllib3 import Retry
 
 from utils import TqdmHandler, GitHubRepo
 
-ACCESS_TOKEN = 'toekn'
+ACCESS_TOKEN = 'token'
 WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
 
 SUC_TAG = 'migration-completed-2'
@@ -88,8 +88,10 @@ for tscn_repo in tscn.get_repos():
             if new_repo_on_bwts.name != tscn_repo.name:
                 LOGGER.warning(f'BWTS repo "{new_repo_on_bwts.name}" differs from "{tscn_repo.name}" in TSCN')
         else:
-            if bwts.get
-            new_repo_on_bwts = bwts.create_repo(tscn_repo_short_name)
+            try:
+                new_repo_on_bwts = bwts.get_repo(tscn_repo_short_name)
+            except UnknownObjectException as ukoe:
+                new_repo_on_bwts = bwts.create_repo(tscn_repo_short_name)
 
         # Check Migration is done
         bwts_repo_topics = new_repo_on_bwts.get_topics()
