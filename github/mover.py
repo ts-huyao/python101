@@ -80,6 +80,9 @@ for tscn_repo in tscn.get_repos():
         tscn_repo_short_name = tscn_repo.name
         tscn_repo_ssh_url = tscn_repo.ssh_url
 
+        if 'Backend-Common' != tscn_repo_short_name:
+            continue
+
         if tscn_repo.fork:
             parent_full_name = tscn_repo.parent.full_name
             if 'Tradeshift/' not in parent_full_name:
@@ -119,11 +122,12 @@ for tscn_repo in tscn.get_repos():
             if bwts_repo_branch.protected:
                 bwts_repo_branch.remove_protection()
 
-        for branch in local_tscn_repo.get_branches('origin'):
-            local_tscn_repo.push_branch('origin', 'bwts', branch)
+        # for branch in local_tscn_repo.get_branches('origin'):
+        #     local_tscn_repo.push_branch('origin', 'bwts', branch)
+        #
+        # # local_tscn_repo.push_all_branches('bwts')
+        # local_tscn_repo.push_all_tags('bwts')
 
-        # local_tscn_repo.push_all_branches('bwts')
-        local_tscn_repo.push_all_tags('bwts')
         # create web hook
         for config in WEB_HOOKS:
             try:
@@ -163,13 +167,17 @@ for tscn_repo in tscn.get_repos():
                         strict=required_status_checks.strict if required_status_checks and required_status_checks.strict else NotSet,
                         contexts=required_status_checks.contexts if required_status_checks and required_status_checks.contexts else NotSet,
                         enforce_admins=protection.enforce_admins,
-                        dismissal_users=required_pull_request_reviews.dismissal_users if required_pull_request_reviews and required_pull_request_reviews.dismissal_users else NotSet,
-                        dismissal_teams=required_pull_request_reviews.dismissal_teams if required_pull_request_reviews and required_pull_request_reviews.dismissal_teams else NotSet,
+                        dismissal_users=[user.login for user in
+                                         required_pull_request_reviews.dismissal_users] if required_pull_request_reviews and required_pull_request_reviews.dismissal_users else NotSet,
+                        dismissal_teams=[team.name for team in
+                                         required_pull_request_reviews.dismissal_teams] if required_pull_request_reviews and required_pull_request_reviews.dismissal_teams else NotSet,
                         dismiss_stale_reviews=required_pull_request_reviews.dismiss_stale_reviews if required_pull_request_reviews and required_pull_request_reviews.dismiss_stale_reviews else NotSet,
                         require_code_owner_reviews=required_pull_request_reviews.require_code_owner_reviews if required_pull_request_reviews and required_pull_request_reviews.require_code_owner_reviews else NotSet,
                         required_approving_review_count=required_pull_request_reviews.required_approving_review_count if required_pull_request_reviews and required_pull_request_reviews.required_approving_review_count else NotSet,
-                        user_push_restrictions=user_push_restriction if user_push_restriction else NotSet,
-                        team_push_restrictions=team_push_restriction if team_push_restriction else NotSet)
+                        user_push_restrictions=[user.login for user in
+                                                user_push_restriction] if user_push_restriction else NotSet,
+                        team_push_restrictions=[team.name for team in
+                                                team_push_restriction] if team_push_restriction else NotSet)
 
         # Mark Migration is donw
         bwts_repo_topics = new_repo_on_bwts.get_topics()
