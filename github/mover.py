@@ -23,7 +23,7 @@ from utils import TqdmHandler, GitHubRepo
 ACCESS_TOKEN = 'token'
 WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
 
-SUC_TAG = 'migration-completed-1'
+SUC_TAG = 'migration-completed-2'
 if not os.path.exists(WORKING_DIR_TSCN):
     os.makedirs(WORKING_DIR_TSCN)
 
@@ -73,8 +73,6 @@ dev_team = next(team for team in teams if team.name == 'Developers')
 mover_team = next(team for team in teams if team.name == 'MOVER')
 
 for tscn_repo in tscn.get_repos():
-    if tscn_repo.name != 'Backend-Ubl':
-        continue
     try:
         if tscn_repo.fork:
             parent_full_name = tscn_repo.parent.full_name
@@ -113,14 +111,17 @@ for tscn_repo in tscn.get_repos():
         local_tscn_repo.add_remote(remote_url=forked_repo.ssh_url, remote_name='bwts')
 
         # Push branches
-        for branch in local_tscn_repo.get_branches('origin'):
-            local_tscn_repo.push_branch('origin', 'bwts', branch)
+#        for branch in local_tscn_repo.get_branches('origin'):
+#            local_tscn_repo.push_branch('origin', 'bwts', branch)
 
         for bwts_repo_branch in forked_repo.get_branches():
             if bwts_repo_branch.protected:
                 bwts_repo_branch.remove_protection()
 
-        local_tscn_repo.push_all_branches('bwts')
+        for branch in local_tscn_repo.get_branches('origin'):
+            local_tscn_repo.push_branch('origin', 'bwts', branch)
+
+        #local_tscn_repo.push_all_branches('bwts')
         local_tscn_repo.push_all_tags('bwts')
         # create web hook
         for config in WEB_HOOKS:
@@ -178,3 +179,4 @@ for tscn_repo in tscn.get_repos():
         LOGGER.info(f'Finished migrating {repo_short_name}')
     except Exception as e:
         LOGGER.error(f'Failed migrating {tscn_repo}')
+        LOGGER.error(e)
