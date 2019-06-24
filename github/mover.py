@@ -80,8 +80,8 @@ for tscn_repo in tscn.get_repos():
         tscn_repo_short_name = tscn_repo.name
         tscn_repo_ssh_url = tscn_repo.ssh_url
 
-        if 'Backend-Common' != tscn_repo_short_name:
-            continue
+#        if 'Backend-Common' != tscn_repo_short_name:
+ #           continue
 
         if tscn_repo.fork:
             parent_full_name = tscn_repo.parent.full_name
@@ -89,7 +89,8 @@ for tscn_repo in tscn.get_repos():
                 continue
             new_repo_on_bwts = bwts.create_fork(tscn_repo.parent)
             if new_repo_on_bwts.name != tscn_repo.name:
-                LOGGER.warning(f'BWTS repo "{new_repo_on_bwts.name}" differs from "{tscn_repo.name}" in TSCN')
+                new_repo_on_bwts.edit(name=tscn_repo.name)
+                LOGGER.warning(f'BWTS repo "{new_repo_on_bwts.name}" is renamed to "{tscn_repo.name}" following TSCN')
         else:
             try:
                 new_repo_on_bwts = bwts.get_repo(tscn_repo_short_name)
@@ -122,11 +123,11 @@ for tscn_repo in tscn.get_repos():
             if bwts_repo_branch.protected:
                 bwts_repo_branch.remove_protection()
 
-        # for branch in local_tscn_repo.get_branches('origin'):
-        #     local_tscn_repo.push_branch('origin', 'bwts', branch)
-        #
-        # # local_tscn_repo.push_all_branches('bwts')
-        # local_tscn_repo.push_all_tags('bwts')
+        for branch in local_tscn_repo.get_branches('origin'):
+            local_tscn_repo.push_branch('origin', 'bwts', branch)
+
+        # local_tscn_repo.push_all_branches('bwts')
+        local_tscn_repo.push_all_tags('bwts')
 
         # create web hook
         for config in WEB_HOOKS:
