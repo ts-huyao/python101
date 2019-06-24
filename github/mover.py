@@ -10,35 +10,15 @@
 """
 
 import logging
-import os
-from logging.handlers import WatchedFileHandler
 
-from coloredlogs import ColoredFormatter
 from github import Github, GithubException, UnknownObjectException
 from github.GithubObject import NotSet
 from urllib3 import Retry
 
-from utils import TqdmHandler, GitHubRepo
-
-ACCESS_TOKEN = 'token'
-WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
+import config
+from utils import GitHubRepo
 
 SUC_TAG = 'migration-completed-2'
-if not os.path.exists(WORKING_DIR_TSCN):
-    os.makedirs(WORKING_DIR_TSCN)
-
-LOGFORMAT = '%(name)s - %(levelname)s - %(message)s'
-formatter = ColoredFormatter(LOGFORMAT)
-stream = TqdmHandler()
-stream.setLevel(logging.INFO)
-stream.setFormatter(formatter)
-
-file_handler = WatchedFileHandler(filename=os.path.join(WORKING_DIR_TSCN, 'mover.log'))
-file_handler.setFormatter(formatter)
-
-logging.basicConfig(level=logging.INFO,
-                    format=LOGFORMAT,
-                    handlers=[stream, file_handler])
 
 LOGGER = logging.getLogger('GitHubRepo')
 
@@ -62,7 +42,7 @@ WEB_HOOKS = [
 
 ]
 
-g = Github(ACCESS_TOKEN, retry=Retry(total=5, status_forcelist=[502]))
+g = Github(config.ACCESS_TOKEN, retry=Retry(total=5, status_forcelist=[502]))
 
 tscn = g.get_organization('TradeshiftCN')
 bwts = g.get_organization('BaiwangTradeshift')
@@ -105,7 +85,7 @@ for tscn_repo in tscn.get_repos():
         dev_team.set_repo_permission(new_repo_on_bwts, 'write')
         ci_team.set_repo_permission(new_repo_on_bwts, 'write')
 
-        local_tscn_repo = GitHubRepo(work_dir=WORKING_DIR_TSCN,
+        local_tscn_repo = GitHubRepo(work_dir=config.WORKING_DIR_TSCN,
                                      dir_name=tscn_repo_short_name,
                                      org_name='TradeshiftCN',
                                      repo_name=tscn_repo_short_name)
