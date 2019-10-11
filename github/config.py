@@ -16,8 +16,8 @@ from coloredlogs import ColoredFormatter
 
 from utils import TqdmHandler
 
-ACCESS_TOKEN = 'token'
-WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/TSCN')
+ACCESS_TOKEN = '553eb4454779955c5e8de0b2dc2f1d1faa3e112c'
+WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/')
 LOG_FILE_PATH = os.path.join(WORKING_DIR_TSCN, 'mover.log')
 
 if not os.path.exists(WORKING_DIR_TSCN):
@@ -29,7 +29,7 @@ stream = TqdmHandler()
 stream.setLevel(logging.INFO)
 stream.setFormatter(formatter)
 
-file_handler = WatchedFileHandler(filename=os.path.join(WORKING_DIR_TSCN, log_file_name))
+file_handler = WatchedFileHandler(filename=os.path.join(WORKING_DIR_TSCN, "githubmover.log"))
 file_handler.setFormatter(formatter)
 
 logging.basicConfig(level=logging.INFO,
