@@ -22,13 +22,12 @@ from utils import GitHubRepo
 
 def make_archive(source, destination):
     base = os.path.basename(destination)
-    name = base.split('.')[0]
-    format = base.split('.')[1]
+    name, ext = os.path.splitext(base)
+    format = ext.split('.')[1]
     archive_from = os.path.dirname(source)
     archive_to = os.path.basename(source.strip(os.sep))
     shutil.make_archive(name, format, archive_from, archive_to)
     shutil.move('%s.%s' % (name, format), destination)
-
 
 WORKING_DIR = os.path.expanduser('~/GithubBackup/')
 
@@ -39,7 +38,7 @@ g = Github(config.ACCESS_TOKEN, retry=Retry(total=5, status_forcelist=[502]))
 tscn = g.get_organization('TradeshiftCN')
 ts = g.get_organization('Tradeshift')
 
-orgs = [tscn, ts]
+orgs = [tscn]
 
 candidates = list()
 for org in orgs:
@@ -66,7 +65,7 @@ for candidate in list(candidates):
 
         local_repo.add_remote(remote_url=repo_ssh_url, remote_name='origin')
         local_repo.fetch('origin')
-        local_repo.checkout('master')
+        local_repo.checkout_active_branch()
         make_archive(os.path.join(WORKING_DIR, org_name, repo_short_name),
                      os.path.join(WORKING_DIR, org_name, repo_short_name + '.zip'))
         shutil.rmtree(os.path.join(WORKING_DIR, org_name, repo_short_name))

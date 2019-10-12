@@ -141,6 +141,9 @@ class GitHubRepo:
         else:
             return self.repo.active_branch
 
+    def checkout_active_branch(self):
+        self.repo.git.checkout(self.repo.active_branch.name)
+
     def checkout_new_branch(self, base_commit_or_tag, new_branch_name):
         checkout_name = None
         tags = self.repo.tags

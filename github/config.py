@@ -16,7 +16,7 @@ from coloredlogs import ColoredFormatter
 
 from utils import TqdmHandler
 
-ACCESS_TOKEN = '553eb4454779955c5e8de0b2dc2f1d1faa3e112c'
+ACCESS_TOKEN = 'token'
 WORKING_DIR_TSCN = os.path.expanduser('~/GithubMover/')
 LOG_FILE_PATH = os.path.join(WORKING_DIR_TSCN, 'mover.log')
 
