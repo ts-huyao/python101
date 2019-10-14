@@ -29,6 +29,7 @@ def make_archive(source, destination):
     shutil.make_archive(name, format, archive_from, archive_to)
     shutil.move('%s.%s' % (name, format), destination)
 
+
 WORKING_DIR = os.path.expanduser('~/GithubBackup/')
 
 LOGGER = logging.getLogger('GitHubRepo')
@@ -38,7 +39,7 @@ g = Github(config.ACCESS_TOKEN, retry=Retry(total=5, status_forcelist=[502]))
 tscn = g.get_organization('TradeshiftCN')
 ts = g.get_organization('Tradeshift')
 
-orgs = [tscn]
+orgs = [tscn, ts]
 
 candidates = list()
 for org in orgs:
@@ -54,21 +55,21 @@ for org in orgs:
 
 for candidate in list(candidates):
     try:
-        org_name = candidate[0]
-        repo_short_name = candidate[1]
-        repo_ssh_url = candidate[2]
+        if not os.path.exists(os.path.join(WORKING_DIR, org_name, repo_short_name + '.zip')):
+            org_name = candidate[0]
+            repo_short_name = candidate[1]
+            repo_ssh_url = candidate[2]
+            local_repo = GitHubRepo(work_dir=os.path.join(WORKING_DIR, org_name),
+                                    dir_name=repo_short_name,
+                                    org_name=org_name,
+                                    repo_name=repo_short_name)
 
-        local_repo = GitHubRepo(work_dir=os.path.join(WORKING_DIR, org_name),
-                                dir_name=repo_short_name,
-                                org_name=org_name,
-                                repo_name=repo_short_name)
-
-        local_repo.add_remote(remote_url=repo_ssh_url, remote_name='origin')
-        local_repo.fetch('origin')
-        local_repo.checkout_active_branch()
-        make_archive(os.path.join(WORKING_DIR, org_name, repo_short_name),
-                     os.path.join(WORKING_DIR, org_name, repo_short_name + '.zip'))
-        shutil.rmtree(os.path.join(WORKING_DIR, org_name, repo_short_name))
+            local_repo.add_remote(remote_url=repo_ssh_url, remote_name='origin')
+            local_repo.fetch('origin')
+            local_repo.checkout_active_branch()
+            make_archive(os.path.join(WORKING_DIR, org_name, repo_short_name),
+                         os.path.join(WORKING_DIR, org_name, repo_short_name + '.zip'))
+            shutil.rmtree(os.path.join(WORKING_DIR, org_name, repo_short_name))
         candidates.remove(candidate)
     except Exception as e:
         LOGGER.error(f'Failed migrating {repo}')
