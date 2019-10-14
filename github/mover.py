@@ -34,31 +34,33 @@ WORKING_DIR = os.path.expanduser('~/GithubBackup/')
 
 LOGGER = logging.getLogger('GitHubRepo')
 
-g = Github(config.ACCESS_TOKEN, retry=Retry(total=5, status_forcelist=[502]))
+# g = Github(config.ACCESS_TOKEN, retry=Retry(total=5, status_forcelist=[502]))
+#
+# tscn = g.get_organization('TradeshiftCN')
+# ts = g.get_organization('Tradeshift')
+#
+# orgs = [tscn, ts]
+#
+# candidates = list()
+# for org in orgs:
+#     org_name = org.login
+#     if not os.path.exists(os.path.join(WORKING_DIR, org_name)):
+#         os.makedirs(os.path.join(WORKING_DIR, org_name))
+#     for repo in org.get_repos():
+#         if repo.raw_data['disabled']:
+#             continue
+#         repo_short_name = repo.name
+#         repo_ssh_url = repo.ssh_url
+#         candidates.append((org_name, repo_short_name, repo_ssh_url))
 
-tscn = g.get_organization('TradeshiftCN')
-ts = g.get_organization('Tradeshift')
-
-orgs = [tscn, ts]
-
-candidates = list()
-for org in orgs:
-    org_name = org.login
-    if not os.path.exists(os.path.join(WORKING_DIR, org_name)):
-        os.makedirs(os.path.join(WORKING_DIR, org_name))
-    for repo in org.get_repos():
-        if repo.raw_data['disabled']:
-            continue
-        repo_short_name = repo.name
-        repo_ssh_url = repo.ssh_url
-        candidates.append((org_name, repo_short_name, repo_ssh_url))
+candidates = [('Tradeshift','tradeshift-puppet','git@github.com:TradeshiftCN/tradeshift-puppet.git')]
 
 for candidate in list(candidates):
+    org_name = candidate[0]
+    repo_short_name = candidate[1]
+    repo_ssh_url = candidate[2]
     try:
         if not os.path.exists(os.path.join(WORKING_DIR, org_name, repo_short_name + '.zip')):
-            org_name = candidate[0]
-            repo_short_name = candidate[1]
-            repo_ssh_url = candidate[2]
             local_repo = GitHubRepo(work_dir=os.path.join(WORKING_DIR, org_name),
                                     dir_name=repo_short_name,
                                     org_name=org_name,
@@ -72,5 +74,5 @@ for candidate in list(candidates):
             shutil.rmtree(os.path.join(WORKING_DIR, org_name, repo_short_name))
         candidates.remove(candidate)
     except Exception as e:
-        LOGGER.error(f'Failed migrating {repo}')
+        LOGGER.error(f'Failed migrating {candidate[0]}/{candidate[1]}')
         LOGGER.error(e)

@@ -142,7 +142,11 @@ class GitHubRepo:
             return self.repo.active_branch
 
     def checkout_active_branch(self):
-        self.repo.git.checkout(self.repo.active_branch.name)
+        raw_outputs = self.repo.git.execute( ['git', 'remote', 'show', 'origin']).splitlines()
+        head_lines = [head_line for head_line in raw_outputs if 'HEAD branch' in head_line]
+        if len(head_lines)==1:
+            branch_name = head_lines[0].strip().split(':')[1].strip()
+            self.repo.git.checkout(branch_name)
 
     def checkout_new_branch(self, base_commit_or_tag, new_branch_name):
         checkout_name = None
